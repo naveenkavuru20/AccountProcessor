@@ -1,0 +1,25 @@
+version: "3.1"
+
+services:
+  db:
+    container_name: intuit-db
+    image: mysql:5.7
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_TCP_PORT=3306
+    entrypoint:
+      sh -c "
+      echo 'CREATE DATABASE IF NOT EXISTS `intuit`;
+      CREATE DATABASE IF NOT EXISTS `intuit`;
+      use intuit;
+      CREATE USER 'user';
+      GRANT ALL PRIVILEGES ON `intuit`.* TO 'user';
+      ' > /docker-entrypoint-initdb.d/init.sql;
+      /usr/local/bin/docker-entrypoint.sh --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+      "
+    restart: always
+    ports:
+      - 3306:3306
+    volumes:
+      - log-db
